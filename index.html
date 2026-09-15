@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a3a5c">
+<title>新会枢纽新城 · 项目监控工作台</title>
+<style>
+  :root{
+    --ink:#16283a; --sub:#5b7084; --line:#e3e9ef; --bg:#f2f5f8;
+    --card:#ffffff; --brand:#1a3a5c; --brand2:#2e6ea6;
+    --accent:#0f7b6c; --warn:#b06a12; --danger:#b3352e;
+    --tag1:#e8f0f7; --tag2:#e6f4ef; --tag3:#fdf3e2; --tag4:#fbeaea;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55;
+       padding-left:64px;
+       padding-bottom:env(safe-area-inset-bottom)}
+  .wrap{max-width:520px;margin:0 auto;padding:12px 14px 40px}
+
+  /* ===== Header ===== */
+  header{background:linear-gradient(135deg,#1a3a5c 0%,#2e6ea6 100%);border-radius:16px;
+         padding:18px 18px 16px;color:#fff;margin-bottom:12px;position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;right:-30px;top:-30px;width:140px;height:140px;
+                border-radius:50%;background:rgba(255,255,255,.08)}
+  .htop{display:flex;justify-content:space-between;align-items:flex-start}
+  .brand{font-size:12px;letter-spacing:2px;opacity:.85}
+  .platename{font-size:21px;font-weight:700;margin-top:2px}
+  .landtag{display:inline-block;margin-top:8px;background:rgba(255,255,255,.16);
+           border:1px solid rgba(255,255,255,.35);padding:2px 10px;border-radius:20px;
+           font-size:12px}
+  .upd{text-align:right;font-size:11px;opacity:.9;line-height:1.6}
+  .upd b{font-size:12px}
+  .statusbar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .statusbar span{background:rgba(255,255,255,.14);border-radius:10px;padding:4px 10px;
+                  font-size:12px}
+
+  /* ===== Section ===== */
+  .sec{margin-top:14px}
+  .sec-title{display:flex;align-items:center;gap:8px;margin:0 2px 10px}
+  .sec-title .bar{width:4px;height:16px;border-radius:2px;background:var(--brand2)}
+  .sec-title h2{font-size:16px;font-weight:700}
+  .sec-title .more{margin-left:auto;font-size:12px;color:var(--sub)}
+
+  /* ===== Card ===== */
+  .card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(20,40,60,.06);
+        border:1px solid var(--line);margin-bottom:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+  .kv .k{font-size:11px;color:var(--sub)}
+  .kv .v{font-size:14px;font-weight:600;margin-top:1px}
+  .kv .v.small{font-size:13px;font-weight:500}
+  .kv.full{grid-column:1/-1}
+  .kv .hl{color:var(--brand2)}
+  .kv .warn{color:var(--warn)}
+
+  /* ===== Land ===== */
+  .land-addr{display:flex;align-items:flex-start;gap:8px;background:#f7fafc;
+             border:1px dashed #c9d6e2;border-radius:10px;padding:10px 12px;margin-bottom:12px}
+  .land-addr .ic{font-size:16px;margin-top:1px}
+  .land-addr .t{font-size:13px;font-weight:600}
+  .land-addr .s{font-size:12px;color:var(--sub);margin-top:2px}
+  .chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .chip{background:var(--tag1);color:var(--brand2);border-radius:8px;padding:3px 9px;font-size:12px;font-weight:600}
+  .chip.w{background:var(--tag3);color:var(--warn)}
+  .chip.g{background:var(--tag2);color:var(--accent)}
+  .deal{background:linear-gradient(135deg,#eef5ee,#eaf3ef);border:1px solid #d4e4da;
+        border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+  .deal .big{font-size:17px;font-weight:700;color:var(--accent)}
+  .deal .lbl{font-size:11px;color:var(--sub)}
+
+  /* ===== Competitor ===== */
+  .comp{background:var(--card);border-radius:14px;border:1px solid var(--line);
+        box-shadow:0 1px 4px rgba(20,40,60,.06);margin-bottom:10px;overflow:hidden}
+  .comp-head{display:flex;justify-content:space-between;align-items:center;
+             padding:12px 14px 10px;background:#f8fafc;border-bottom:1px solid var(--line)}
+  .comp-name{font-size:15px;font-weight:700}
+  .comp-dev{font-size:11px;color:var(--sub);margin-top:1px}
+  .st{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .st.sale{background:var(--tag2);color:var(--accent)}
+  .st.new{background:var(--tag1);color:var(--brand2)}
+  .st.wait{background:var(--tag3);color:var(--warn)}
+  .comp-body{padding:12px 14px}
+  .crow{display:flex;padding:7px 0;border-bottom:1px dashed #eef2f6}
+  .crow:last-child{border-bottom:none}
+  .crow .k{width:74px;flex-shrink:0;font-size:12px;color:var(--sub)}
+  .crow .v{font-size:13px;font-weight:600;flex:1}
+  .crow .v .sub{font-weight:400;color:var(--sub);font-size:12px}
+  .price-hl{color:var(--brand2)}
+  .tagrow{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .ptag{font-size:11px;border-radius:6px;padding:2px 8px;font-weight:600}
+  .ptag.t1{background:var(--tag1);color:var(--brand2)}
+  .ptag.t2{background:var(--tag2);color:var(--accent)}
+  .ptag.t3{background:var(--tag3);color:var(--warn)}
+  .ptag.t4{background:var(--tag4);color:var(--danger)}
+  /* 去化率 */
+  .selrow{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .selbar{flex:1;height:8px;background:#eef2f6;border-radius:4px;overflow:hidden}
+  .selbar i{display:block;height:100%;background:linear-gradient(90deg,#2e6ea6,#0f7b6c);border-radius:4px}
+  .selnum{font-size:12px;font-weight:700;color:var(--brand2);white-space:nowrap}
+  .selnote{font-size:11px;color:var(--sub);margin-top:3px}
+
+  /* ===== Channels ===== */
+  .chan{display:flex;align-items:flex-start;gap:10px;background:var(--card);
+        border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px;
+        text-decoration:none;color:inherit;box-shadow:0 1px 3px rgba(20,40,60,.04)}
+  .chan:active{transform:scale(.99);background:#f8fafc}
+  .chan .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;
+            justify-content:center;font-size:16px;flex-shrink:0}
+  .chan .ic.o{background:var(--tag1)} .chan .ic.p{background:var(--tag2)} .chan .ic.n{background:var(--tag3)}
+  .chan .body{flex:1;min-width:0}
+  .chan .name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .chan .desc{font-size:12px;color:var(--sub);margin-top:1px}
+  .chan .url{font-size:11px;color:var(--brand2);margin-top:3px;word-break:break-all;opacity:.85}
+  .chan .go{margin-left:2px;color:#c3ccd6;font-size:13px}
+
+  /* ===== Market snapshot ===== */
+  .mk{background:var(--card);border-radius:14px;border:1px solid var(--line);padding:14px;
+      box-shadow:0 1px 4px rgba(20,40,60,.06)}
+  .mk-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed #eef2f6;font-size:13px}
+  .mk-row:last-child{border:none}
+  .mk-row .l{color:var(--sub)} .mk-row .r{font-weight:700}
+  .mk-row .r.up{color:var(--accent)}
+
+  footer{text-align:center;color:#9aa9b8;font-size:11px;margin-top:18px;line-height:1.8}
+  .foot-line{width:60px;height:3px;background:#d6dee6;border-radius:2px;margin:0 auto 10px}
+
+  /* ===== Legend ===== */
+  .legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .lg{font-size:11px;color:var(--sub);display:flex;align-items:center;gap:4px}
+  .lg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+  /* ===== Policies ===== */
+  .pol{background:var(--card);border-radius:14px;border:1px solid var(--line);
+       box-shadow:0 1px 4px rgba(20,40,60,.06);margin-bottom:10px;overflow:hidden}
+  .pol-head{display:flex;justify-content:space-between;align-items:center;
+            padding:12px 14px 10px;background:#f8fafc;border-bottom:1px solid var(--line)}
+  .pol-name{font-size:14px;font-weight:700}
+  .pol-src{font-size:11px;color:var(--sub);margin-top:1px}
+  .pol-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .pol-badge.active{background:var(--tag2);color:var(--accent)}
+  .pol-badge.expire{background:var(--tag3);color:var(--warn)}
+  .pol-badge.new{background:var(--tag4);color:var(--danger)}
+
+  /* ===== 首页新政策醒目横幅 ===== */
+  .npa{margin-bottom:12px;border-radius:14px;overflow:hidden;border:1px solid #e8c9a8;
+       background:linear-gradient(135deg,#fff7ea 0%,#fdeede 100%);
+       box-shadow:0 2px 10px rgba(176,106,18,.16)}
+  .npa-head{display:flex;align-items:center;gap:8px;padding:11px 14px 6px}
+  .npa-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);
+           animation:npaPulse 1.6s infinite;flex-shrink:0}
+  @keyframes npaPulse{0%,100%{box-shadow:0 0 0 0 rgba(179,53,46,.45)}
+                      50%{box-shadow:0 0 0 6px rgba(179,53,46,0)}}
+  .npa-title{font-size:14px;font-weight:800;color:var(--danger);letter-spacing:1px}
+  .npa-count{margin-left:auto;background:var(--danger);color:#fff;border-radius:12px;
+             font-size:11px;font-weight:700;padding:1px 9px}
+  .npa-item{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 10px 10px;
+            background:#fff;border-radius:10px;border:1px solid #f0e3d0;cursor:pointer}
+  .npa-item:active{background:#fdf6ea}
+  .npa-item .tag{flex-shrink:0;background:var(--danger);color:#fff;border-radius:6px;
+                 font-size:10.5px;font-weight:800;padding:2px 6px;letter-spacing:.5px}
+  .npa-item .nm{font-size:13px;font-weight:700;line-height:1.45;flex:1;min-width:0}
+  .npa-item .nm small{display:block;font-size:11px;color:var(--sub);font-weight:500;
+                      margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .npa-item .go{color:var(--warn);font-size:20px;font-weight:700;flex-shrink:0;line-height:1}
+  .pol-body{padding:12px 14px}
+  .pol-desc{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:6px}
+  .pol-detail{font-size:12px;color:var(--sub);line-height:1.7;white-space:pre-line}
+  .pol-link{display:inline-block;margin-top:6px;font-size:12px;color:var(--brand2);
+            text-decoration:none;border-bottom:1px solid var(--brand2);padding-bottom:1px}
+  .pol-link:active{opacity:.7}
+
+  /* ===== Side Nav（左侧固定） ===== */
+  .navbar{position:fixed;left:0;top:0;bottom:0;width:64px;z-index:60;
+          background:#fff;border-right:1px solid var(--line);
+          display:flex;flex-direction:column;
+          padding:14px 6px calc(14px + env(safe-area-inset-bottom))}
+  .navbar .nav-brand{font-size:11px;font-weight:800;color:var(--brand);text-align:center;
+                     letter-spacing:1px;padding:4px 0 10px;margin-bottom:8px;
+                     border-bottom:1px dashed var(--line);line-height:1.4}
+  .navbar .nav-in{display:flex;flex-direction:column;gap:4px;flex:1;justify-content:space-evenly}
+  .navbar a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px;
+            border-radius:10px;text-decoration:none;color:var(--sub);
+            font-size:10.5px;font-weight:600;transition:all .15s}
+  .navbar a .ni{font-size:17px;line-height:1}
+  .navbar a.on{background:var(--brand);color:#fff;box-shadow:0 2px 6px rgba(26,58,92,.28)}
+
+  /* ===== Hotspots ===== */
+  .hot{display:flex;align-items:center;gap:9px;background:#f7f9fb;
+       border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:7px;
+       text-decoration:none;color:inherit;box-shadow:0 1px 2px rgba(20,40,60,.04)}
+  .hot:last-child{margin-bottom:0}
+  .hot:active{transform:scale(.99);background:#f0f4f8}
+  .hot .tag{flex-shrink:0;font-size:11px;font-weight:700;color:#fff;
+            background:linear-gradient(135deg,#b3352e,#e2574d);border-radius:6px;padding:2px 7px}
+  .hot .t{flex:1;min-width:0;font-size:13px;font-weight:600;line-height:1.4}
+  .hot .s{flex-shrink:0;color:#c3ccd6;font-size:14px}
+
+  /* ===== 网签排名 ===== */
+  .rank{display:flex;align-items:center;gap:10px;background:var(--card);
+        border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px;
+        text-decoration:none;color:inherit;box-shadow:0 1px 3px rgba(20,40,60,.04)}
+  .rank:active{transform:scale(.99);background:#f8fafc}
+  .rank .rk-no{width:27px;height:27px;border-radius:8px;background:var(--tag1);color:var(--brand2);
+               display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;
+               flex-shrink:0}
+  .rank .rk-no.top{background:linear-gradient(135deg,#b3352e,#e2574d);color:#fff;font-size:14px}
+  .rank .rk-body{flex:1;min-width:0}
+  .rank .rk-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .rank .rk-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px}
+  .rank .rk-tag.in{background:var(--tag2);color:var(--accent)}
+  .rank .rk-tag.out{background:var(--tag1);color:var(--sub)}
+  .rank .rk-bar{display:block;height:5px;background:#eef2f6;border-radius:3px;margin-top:5px;overflow:hidden}
+  .rank .rk-bar i{display:block;height:100%;background:linear-gradient(90deg,#2e6ea6,#0f7b6c)}
+  .rank .rk-sub{font-size:11px;color:var(--sub);margin-top:3px}
+  .rank .rk-num{flex-shrink:0;font-size:18px;font-weight:800;color:var(--brand2);line-height:1.1;
+                display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+  .rank .rk-num small{font-size:10px;font-weight:600;color:var(--sub);margin-left:2px}
+  .rank .rk-price{font-size:11.5px;font-weight:700;color:var(--danger);line-height:1.15;white-space:nowrap}
+  .rank .rk-price i{font-style:normal;color:var(--sub);font-weight:500}
+  .rank .rk-price.na{color:#9aa9b8;font-weight:500}
+  .rank .go{flex-shrink:0;color:#c3ccd6;font-size:14px}
+  .rank-note{font-size:11px;color:#9aa9b8;margin:2px 4px 0;line-height:1.6}
+
+  /* ===== 网签排名 · 月份翻页 ===== */
+  .rank-pager{display:flex;align-items:center;gap:10px;margin:0 2px 10px;
+              background:var(--card);border:1px solid var(--line);border-radius:14px;
+              padding:10px 12px;box-shadow:0 1px 3px rgba(20,40,60,.05)}
+  .rank-pager .pg-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
+              background:#f8fafc;color:var(--brand2);font-size:18px;font-weight:800;cursor:pointer;
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;
+              box-shadow:0 1px 2px rgba(20,40,60,.05);line-height:1}
+  .rank-pager .pg-btn:disabled{opacity:.3;cursor:default;box-shadow:none}
+  .rank-pager .pg-btn:not(:disabled):active{background:var(--tag1);transform:scale(.96)}
+  .rank-pager .pg-mid{flex:1;text-align:center;min-width:0}
+  .rank-pager .pg-y{font-size:18px;font-weight:800;color:var(--ink);letter-spacing:1px;line-height:1.2}
+  .rank-pager .pg-src{font-size:10.5px;color:var(--sub);margin-top:1px;white-space:nowrap;
+                      overflow:hidden;text-overflow:ellipsis}
+
+  /* ===== 12个月趋势弹窗 ===== */
+  .trend-btn{display:block;width:100%;margin-top:10px;padding:9px 10px;border:1px dashed var(--brand2);
+             border-radius:10px;background:var(--tag1);color:var(--brand2);
+             font-size:13px;font-weight:700;cursor:pointer;text-align:center}
+  .trend-btn:active{background:#dbe7f2}
+  .modal-mask{position:fixed;inset:0;background:rgba(15,30,45,.55);z-index:100;
+              display:flex;align-items:center;justify-content:center;padding:16px}
+  .modal{background:#fff;border-radius:16px;width:100%;max-width:520px;max-height:88vh;
+         display:flex;flex-direction:column;overflow:hidden;
+         box-shadow:0 12px 40px rgba(0,0,0,.28)}
+  .modal-head{display:flex;justify-content:space-between;align-items:flex-start;
+              padding:14px 16px 10px;border-bottom:1px solid var(--line);background:#f8fafc}
+  .modal-title{font-size:15px;font-weight:700}
+  .modal-sub{font-size:11px;color:var(--sub);margin-top:2px;line-height:1.5}
+  .modal-close{border:none;background:var(--tag1);color:var(--brand2);width:28px;height:28px;
+               border-radius:50%;font-size:13px;cursor:pointer;flex-shrink:0;line-height:1}
+  .modal-body{padding:12px 14px 14px;overflow-y:auto}
+  .chart{display:flex;align-items:flex-end;gap:4px;height:148px;padding:0 2px;
+         border-bottom:1px solid var(--line);margin-bottom:4px}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;
+           justify-content:flex-end;gap:3px;min-width:0}
+  .bar-val{font-size:9px;font-weight:700;color:var(--brand2);line-height:1}
+  .bar{width:100%;max-width:26px;border-radius:4px 4px 0 0}
+  .bar.exact{background:linear-gradient(180deg,#2e6ea6,#1a3a5c)}
+  .bar.est{background:repeating-linear-gradient(45deg,#a9c2da 0 4px,#c6d8ea 4px 8px)}
+  .bar-label{font-size:9px;color:var(--sub);margin-top:4px;white-space:nowrap}
+  .chart-legend{font-size:10px;color:var(--sub);margin:6px 2px 2px}
+  .trend-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:8px}
+  .trend-table th{background:var(--tag1);color:var(--brand2);padding:6px 4px;font-size:11px;
+                  text-align:left;position:sticky;top:0;z-index:1}
+  .trend-table td{padding:5px 4px;border-bottom:1px dashed #eef2f6;vertical-align:top}
+  .trend-table td.m{white-space:nowrap;font-weight:700}
+  .trend-table tr.exact td{background:#f4f9fd}
+  .est-tag{display:inline-block;font-size:9.5px;font-weight:600;color:var(--warn);
+           background:var(--tag3);border-radius:5px;padding:0 5px;margin-left:2px}
+  .trend-note{font-size:10.5px;color:var(--sub);line-height:1.7;margin-top:10px;
+              padding-top:8px;border-top:1px dashed var(--line)}
+  .trend-note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ======== 左侧书签导航 ======== -->
+  <nav class="navbar" id="topNav">
+    <div class="nav-brand">监控<br>工作台</div>
+    <div class="nav-in">
+      <a href="#sec-home" data-target="sec-home" class="on"><span class="ni">🏠</span>首页</a>
+      <a href="#sec-land" data-target="sec-land"><span class="ni">📋</span>地块</a>
+      <a href="#sec-comp" data-target="sec-comp"><span class="ni">👀</span>竞品</a>
+      <a href="#sec-chan" data-target="sec-chan"><span class="ni">🔗</span>渠道</a>
+      <a href="#sec-pol" data-target="sec-pol"><span class="ni">📜</span>政策</a>
+    </div>
+  </nav>
+
+  <!-- ======== 首页：header + 网签排名 + 市场快照 ======== -->
+  <div class="sec" id="sec-home">
+  <header>
+    <div class="htop">
+      <div>
+        <div class="brand">新会枢纽新城 · 项目监控工作台</div>
+        <div class="platename" id="plateName">JCR2026-59（新会08）</div>
+        <div class="landtag" id="plateTag">CLD 板块 · 设计阶段</div>
+      </div>
+      <div class="upd">数据更新<br><b id="updAt">--</b></div>
+    </div>
+    <div class="statusbar" id="statusBar"></div>
+  </header>
+
+  <!-- 新政策醒目提醒（badge:"new" 的政策自动上榜，无新政策时隐藏） -->
+  <div id="newPolAlert"></div>
+
+  <div class="sec-title"><span class="bar"></span><h2>网签排名</h2>
+    <span class="more" id="rankAsOf">官方月榜 / 周报口径</span></div>
+  <div class="rank-pager">
+    <button class="pg-btn" id="rankPrev" aria-label="更早月份">‹</button>
+    <div class="pg-mid">
+      <div class="pg-y" id="rankYm">--</div>
+      <div class="pg-src" id="rankSrc">--</div>
+    </div>
+    <button class="pg-btn" id="rankNext" aria-label="更近月份">›</button>
+  </div>
+  <div id="rankList"></div>
+
+  <div class="sec-title"><span class="bar"></span><h2>市场快照</h2>
+    <span class="more" id="mkAsOf"></span></div>
+  <div class="mk" id="mkList"></div>
+
+  <footer>
+    <div class="foot-line"></div>
+    数据来源：江门市房屋交易和产权管理信息平台 · 江门市住建局<br>
+    土地市场动态监测监管系统 · 江门房协网 · 商业房产平台<br>
+    每日 09:00 自动更新
+  </footer>
+  </div>
+
+  <!-- ======== 1 地块档案 ======== -->
+  <div class="sec" id="sec-land">
+    <div class="sec-title"><span class="bar"></span><h2>地块档案</h2>
+      <span class="more" id="landMore"></span></div>
+
+    <div class="card">
+      <div class="land-addr">
+        <div class="ic">📍</div>
+        <div>
+          <div class="t" id="landAddr"></div>
+          <div class="s" id="landAddrNote"></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="kv"><div class="k">成交日期</div><div class="v" id="landDealDate"></div></div>
+        <div class="kv"><div class="k">出让方式</div><div class="v small" id="landMode"></div></div>
+        <div class="kv full"><div class="k">成交总价</div>
+          <div class="v" id="landPrice"></div></div>
+        <div class="kv"><div class="k">楼面价（按计容上限）</div><div class="v hl" id="landFloor"></div></div>
+        <div class="kv"><div class="k">用地面积</div><div class="v" id="landArea"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title" style="margin:0 0 8px"><span class="bar"></span><h2 style="font-size:14px">规划条件</h2></div>
+      <div class="chiprow" id="landPlan"></div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #eef2f6">
+        <div style="font-size:12px;color:var(--sub);margin-bottom:6px">配建要求（无偿移交）</div>
+        <div class="chiprow" id="landPeijian"></div>
+      </div>
+    </div>
+
+    <div class="deal">
+      <div><div class="lbl">项目阶段</div><div class="big" id="landStage"></div></div>
+      <div><div class="lbl">楼面价安全垫</div><div class="big" id="landEdge"></div></div>
+      <div><div class="lbl">建议定价参考</div><div class="big" id="landRef"></div></div>
+    </div>
+  </div>
+
+  <!-- ======== 2 竞品监控 ======== -->
+  <div class="sec" id="sec-comp">
+    <div class="sec-title"><span class="bar"></span><h2>竞品监控</h2>
+      <span class="more" id="compCount"></span></div>
+
+    <div id="compList"></div>
+
+    <div class="card">
+      <div style="font-size:12px;color:var(--sub);margin-bottom:6px">营销策略四类标签</div>
+      <div class="legend">
+        <span class="lg"><i style="background:#e8f0f7"></i>产品力（4.0 / 高实用率）</span>
+        <span class="lg"><i style="background:#e6f4ef"></i>低价跑量 / 促销</span>
+        <span class="lg"><i style="background:#fdf3e2"></i>国企 / 品牌背书</span>
+        <span class="lg"><i style="background:#fbeaea"></i>高端改善 / 大平层</span>
+      </div>
+      <div style="font-size:11px;color:#9aa9b8;margin-top:8px">※ 去化率 = 已网签套数 / 总套数，来源为官方网签系统，每日更新</div>
+    </div>
+  </div>
+
+  <!-- ======== 3 数据渠道 ======== -->
+  <div class="sec" id="sec-chan">
+    <div class="sec-title"><span class="bar"></span><h2>数据渠道</h2>
+      <span class="more">四类 · 点击直达</span></div>
+    <div id="chanList"></div>
+  </div>
+
+  <!-- ======== 4 房地产政策 ======== -->
+  <div class="sec" id="sec-pol">
+    <div class="sec-title"><span class="bar"></span><h2>房地产政策</h2>
+      <span class="more" id="polAsOf"></span></div>
+    <div id="polList"></div>
+  </div>
+
+</div>
+
+<!-- ======== 12个月趋势弹窗 ======== -->
+<div class="modal-mask" id="trendModal" style="display:none" onclick="if(event.target===this)closeTrend()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="trendTitle">怡福·博荟 · 月度网签趋势</div>
+        <div class="modal-sub" id="trendSub"></div>
+      </div>
+      <button class="modal-close" onclick="closeTrend()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="chart" id="trendChart"></div>
+      <div class="chart-legend">■ 深色 = 官方确认值　▨ 斜纹 = 未进榜 / 未披露（不估算）</div>
+      <table class="trend-table" id="trendTable"></table>
+      <div class="trend-note" id="trendNote"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+ * 工作台数据（每日 09:00 由自动化更新本对象，布局不动）
+ * ===================================================== */
+const D = {
+  updatedAt: "2026-09-15 09:00",
+  statusBar: ["设计阶段", "第37周周报已出(9.7-9.13)", "国家新政:房贷最长40年+预售须主体封顶", "公积金买车位执行中(至12/31)", "车位补贴剩余约2500名额(至10/31)", "公积金缴存基数下限调至2040元(9月起)", "银海湾壹号已领预售证(81套/2栋)", "9月差分监控中(官方API 9/14 502)"],
+
+  /* 月度网签快照：每日自动化差分基准。
+     逻辑：本月新增 = 本次官方累计 - 上次快照累计，同月累加到各盘 m.sold，跨月重置并更新快照 */
+  mSnap: {date:"2026-09-15", sold:{
+    "怡福·峰荟":224, "银海湾壹号":0, "天悦骏汇花园":324, "银海盛汇天际":308,
+    "骏景湾天汇":681, "怡福·博荟":506, "珑城半山":3715, "保利西海岸":7208, "朗廷云墅花园":407, "外围改善组":0
+  }},
+
+  /* 历史月网签（排名翻页用）。正序存放，最近历史月在最末。
+     规则：只录官方榜单确认在榜的盘（月榜=美智研究院/官方口径，周报=江门房协网转载），
+     未进榜不记录、不显示（不估0）；src 注明数据源与统计周期，empty 表示该月官方榜单未检索到。
+     均价：sold 值为 {n:套数, p:官方均价(元/㎡)}；p 缺失=官方榜单未披露均价（不估算、标注未披露） */
+  rankHist: {
+    asOf: "2026-09-14",
+    months: [
+      {y:"2025-10", src:"官方周报/月报未检索到", empty:true},
+      {y:"2025-11", src:"中指月报·成交金额榜（无项目均价）", sold:{"骏景湾天汇":{n:18}}},
+      {y:"2025-12", src:"周报·跨年周(12.29-1.4)", sold:{"保利西海岸":{n:8,p:9394},"珑城半山":{n:4,p:10013},"怡福·峰荟":{n:2,p:11469}}},
+      {y:"2026-01", src:"官方月榜·美智研究院", sold:{"骏景湾天汇":{n:29,p:12303},"天悦骏汇花园":{n:21,p:11424},"珑城半山":{n:17,p:11093},"保利西海岸":{n:15,p:9876}}},
+      {y:"2026-02", src:"官方月榜·美智研究院", sold:{"骏景湾天汇":{n:22,p:12944},"朗廷云墅花园":{n:13,p:8023},"怡福·博荟":{n:11,p:10722},"怡福·峰荟":{n:11,p:11412},"银海盛汇天际":{n:9,p:11090},"保利西海岸":{n:9,p:7204}}},
+      {y:"2026-03", src:"官方月榜·美智研究院", sold:{"骏景湾天汇":{n:48,p:12900},"保利西海岸":{n:14,p:8047},"珑城半山":{n:13,p:9591},"朗廷云墅花园":{n:11,p:8044}}},
+      {y:"2026-04", src:"官方月榜·美智研究院", sold:{"骏景湾天汇":{n:49,p:12831},"银海盛汇天际":{n:22,p:10668},"保利西海岸":{n:15,p:7580},"珑城半山":{n:14,p:10090},"天悦骏汇花园":{n:13,p:10213},"怡福·博荟":{n:11,p:10995}}},
+      {y:"2026-05", src:"官方月榜·美智研究院", sold:{"骏景湾天汇":{n:29,p:13004},"银海盛汇天际":{n:27,p:10902},"珑城半山":{n:24,p:9485},"朗廷云墅花园":{n:16,p:8511}}},
+      {y:"2026-06", src:"周报·第24周(6.8-14)", sold:{"银海盛汇天际":{n:4,p:10009},"怡福·峰荟":{n:4,p:10797},"保利西海岸":{n:4,p:9469},"骏景湾天汇":{n:3,p:12669},"怡福·博荟":{n:2,p:10428}}},
+      {y:"2026-07", src:"官方月榜·美智研究院", sold:{"骏景湾天汇":{n:19,p:12827},"银海盛汇天际":{n:17,p:9859},"怡福·博荟":{n:15,p:10711},"怡福·峰荟":{n:11,p:10477},"珑城半山":{n:10,p:10027}}},
+      {y:"2026-08", src:"官方月榜·美智研究院", sold:{"骏景湾天汇":{n:18,p:12429},"怡福·峰荟":{n:13,p:10636},"银海盛汇天际":{n:13,p:10269},"保利西海岸":{n:13,p:8280},"朗廷云墅花园":{n:11,p:8515},"天悦骏汇花园":{n:9,p:10967},"珑城半山":{n:9,p:10558}}}
+    ]
+  },
+
+  land: {
+    addr: "新会区枢纽新城厚德路南侧、梅江南路西侧",
+    addrNote: "CLD 板块 · 紧邻新会华侨实验小学 · 近启超大道 / 明德二路",
+    dealDate: "2026-05-08",
+    mode: "底价成交",
+    price: "22,359.71 万元",
+    floor: "约 3,594 元/㎡",
+    area: "46.7 亩（31,107 ㎡）",
+    plan: [
+      {t:"容积率 1.2–2.0"},
+      {t:"计容 3.73–6.22 万㎡"},
+      {t:"商业 ≤ 20%"},
+      {t:"密度 ≤ 22%", c:"w"},
+      {t:"绿地率 ≥ 30%", c:"g"},
+      {t:"限高 ≤ 80m", c:"w"}
+    ],
+    peijian: ["社区服务用房（含养老）", "环卫设施", "健身设施", "无偿移交政府"],
+    stage: "设计阶段",
+    edge: "楼面价 3,594 → 对标 10,000+ 有健康利润",
+    ref: "9,000–11,000 元/㎡（4.0 产品）"
+  },
+
+  /* 竞品：s=在售 n=新盘/未开售 w=待售
+     xmid=官方网签详情页ID（自动化更新时务必保留）；inBoard=是否枢纽新城板块内 */
+  competitors: [
+    {
+      name: "怡福·峰荟", order: 5, xmid: "2e94c442-0526-401a-bb7b-9d316ee3fc9b", inBoard: true, dev: "聚福浩房地产（同厚德路南侧，紧邻地块）", st: "s", stTxt: "在售 · 最近邻居",
+      fields: [
+        {k:"开售日期", v:"2025-03 开盘（一期 2024-09 取证）"},
+        {k:"栋数 / 户数", v:"住宅 578 套（总 1,002 套含商业）"},
+        {k:"户型面积", v:"91–146㎡ 三至四房（4.0 新规）"},
+        {k:"价格", v:"网签均价 11,512 元/㎡", hl:true, sub:"第37周4套@11,310 · 第35周 10,695"}
+      ],
+      tags: [{t:"4.0 新规", c:"t1"},{t:"带装修", c:"t1"},{t:"高得房率", c:"t1"},{t:"学区·华侨实验小学", c:"t3"}],
+      sel: {sold: 224, total: 578, pct: 39},
+      selNote: "官方累计网签 220/578（38%）；9月差分+3（官方API 9/11核，9/14 API 502不可用）；8月新取证8栋持续加推，4.0+带装+学区是枢纽三把尖刀",
+      m: {sold: 7, p: 11310, pw: "第37周", note: "9月累计3套（官方API差分9/1–9/11，9/14 API 502不可用无法延展）；第37周4套@11310；8月已归档=13套@10636（美智月榜）"}
+    },
+    {
+      name: "银海湾壹号", order: 1, xmid: "", inBoard: true, dev: "新会佳弘置业（区属国企·银海集团，启超大道×明德二路）", st: "n", stTxt: "纯新盘 · 已领预售证",
+      fields: [
+        {k:"开售日期", v:"2026-09 领预售证（新会预许字第2026034号·2栋 81套），示范区已开放，待定价入市"},
+        {k:"栋数 / 户数", v:"4 栋高层 / 351 套（备案名 银海湾壹号苑）"},
+        {k:"户型面积", v:"86–128㎡ 三至四房（4.0 新规小户型）"},
+        {k:"价格", v:"未公布", hl:true, sub:"示范区已开放，预计9月底入市，定价将直接锚定我方"}
+      ],
+      tags: [{t:"4.0 湖景", c:"t1"},{t:"实用率约140%", c:"t1"},{t:"国企", c:"t3"},{t:"3米层高·6米露台", c:"t1"}],
+      sel: null,
+      selNote: "第37周新会住建局批复预售证（新会预许字第2026034号，2栋81套/8926.74㎡）；定价未公布——最直接竞品，密切盯梢",
+      m: null
+    },
+    {
+      name: "天悦骏汇花园", order: 6, xmid: "ab60e1d4-5e6d-419b-98dd-5abd691b59f9", inBoard: true, dev: "骏景湾（明德二路 6 号，紧邻地块）", st: "s", stTxt: "在售",
+      fields: [
+        {k:"开售日期", v:"在售中（2025 年入市）"},
+        {k:"栋数 / 户数", v:"多栋 / 住宅 601 套（总 934 含商业）"},
+        {k:"户型面积", v:"—（待核实）"},
+        {k:"价格", v:"网签均价 12,133 元/㎡", hl:true, sub:"第37周未进榜 · 第36周 10,360 · 促销 9 字头"}
+      ],
+      tags: [{t:"促销跑量", c:"t2"},{t:"官方网签锚点", c:"t3"}],
+      sel: {sold: 324, total: 601, pct: 54},
+      selNote: "官方累计网签 323/601（54%）；第37周未进新会TOP10；9月差分+2（API 9/11核，9/14 502）",
+      m: {sold: 3, p: 10360, pw: "第36周", note: "9月累计2套（官方API差分9/1–9/11，9/14 API 502不可用无法延展）；第37周未进新会TOP10，回退第36周@10360；8月已归档=9套@10967（美智月榜）"}
+    },
+    {
+      name: "银海盛汇天际", order: 3, xmid: "791e9dfb-7da5-4553-89a8-ff1b69fefb59", inBoard: true, dev: "银海集团（区属国企）", st: "s", stTxt: "在售",
+      fields: [
+        {k:"开售日期", v:"2025-10 开盘（持续加推，2026-07 新领 15#）"},
+        {k:"栋数 / 户数", v:"16 栋 / 住宅 731 套（总 1,450 套含商业）"},
+        {k:"户型面积", v:"98–278㎡ 三至四房+大平层"},
+        {k:"价格", v:"网签均价 9,719 元/㎡", hl:true, sub:"第37周 10,652 · 第36周 9,771 · 7月单月17套"}
+      ],
+      tags: [{t:"国企", c:"t3"},{t:"大平层", c:"t4"},{t:"毛坯走量", c:"t2"}],
+      sel: {sold: 308, total: 731, pct: 42},
+      selNote: "官方累计网签 306/731（42%）；第37周2套@10,652；9月差分+4（API 9/11核，9/14 502）",
+      m: {sold: 6, p: 10652, pw: "第37周", note: "9月累计4套（官方API差分9/1–9/11，9/14 API 502不可用无法延展）；第37周2套@10652；8月已归档=13套@10269（美智月榜）"}
+    },
+    {
+      name: "骏景湾天汇", order: 2, xmid: "1d5087ae-34c6-4928-9f8c-60497139379d", inBoard: true, dev: "骏景湾（原汽车总站地块）", st: "s", stTxt: "在售",
+      fields: [
+        {k:"开售日期", v:"2026 年已开售（持续取证，2026-08 26栋新取证34套）"},
+        {k:"栋数 / 户数", v:"住宅 958 套（总 1,510 套含商业）"},
+        {k:"户型面积", v:"97–232㎡ 豪装四房为主"},
+        {k:"价格", v:"网签均价 13,519 元/㎡", hl:true, sub:"第37周 12,690 · 第36周 12,607 · 7月签19套、12,827"}
+      ],
+      tags: [{t:"高端改善", c:"t4"},{t:"豪装", c:"t4"},{t:"4.0 一字板楼", c:"t1"}],
+      sel: {sold: 681, total: 958, pct: 71},
+      selNote: "官方累计网签 677/958（71%）；第37周6套@12,690居新会第2；9月差分+16（API 9/11核，9/14 502）",
+      m: {sold: 20, p: 12690, pw: "第37周", note: "9月累计16套（官方API差分9/1–9/11，9/14 API 502不可用无法延展）；第37周6套@12690居新会第2；8月已归档=18套@12429（美智月榜，新会销冠）"}
+    },
+    {
+      name: "怡福·博荟", order: 7, xmid: "7facbc62-b136-437c-9407-c3560d69f4d5", inBoard: true, dev: "创福源房地产（银海·怡福国企民企合作盘，今华路南侧·吉祥南路东侧，华侨实验小学侧）", st: "s", stTxt: "在售 · 已交付",
+      fields: [
+        {k:"开售日期", v:"2024-05 开盘 · 2026-08-15 提前交付 256 户（交房即发证）"},
+        {k:"栋数 / 户数", v:"住宅 696 套（总 1,541 含车库/商铺）"},
+        {k:"户型面积", v:"97–128㎡ 二至四房（毛坯）"},
+        {k:"价格", v:"网签均价 10,933 元/㎡", hl:true, sub:"挂牌 11,000–11,500 · 特价一口价 102 万起 · 第37周未进榜"}
+      ],
+      tags: [{t:"学区·华侨实验小学", c:"t3"},{t:"国企合作盘", c:"t3"},{t:"已交付现房", c:"t1"},{t:"去化7成3", c:"t2"}],
+      sel: {sold: 506, total: 696, pct: 73},
+      selNote: "官方累计网签 505/696（73%）；同 CLD 板块、同学区，8/15 提前交付现房在售，毛坯 1.09 万直接分流刚需——2026-08-28 新入监控",
+      m: {sold: 1, note: "9月累计0套（官方API差分9/1–9/11，9/14 API 502不可用）；第37周未进新会TOP10；8月未进美智月榜TOP10（8/28 新入监控）；本周报及累计差分监控中"},
+
+      /* 12个月月度网签趋势（2025-09 ~ 2026-08）
+         只录官方确认数据（月榜=美智研究院官方口径；周报=江门房协网转载）。
+         sold=0 且 rank 含「未进榜/未检索到」= 该月官方榜单未披露该盘，不估算 */
+      trend12: {
+        asOf: "2026-09-01",
+        months: [
+          {y:"2025-09", sold:3,  est:false, price:"10,888", rank:"周报第39周", note:"周报·第39周 3套@10,888（整月月榜未公开）"},
+          {y:"2025-10", sold:0,  est:false, price:"—",     rank:"未进榜", note:"官方月榜/周报未检索到"},
+          {y:"2025-11", sold:0,  est:false, price:"—",     rank:"未进榜", note:"官方月榜/周报未检索到"},
+          {y:"2025-12", sold:0,  est:false, price:"—",     rank:"未进榜", note:"跨年周TOP10未上榜（第10名2套）"},
+          {y:"2026-01", sold:0,  est:false, price:"—",     rank:"未进新会TOP10", note:"美智月榜未上榜（第10名11套）"},
+          {y:"2026-02", sold:11, est:false, price:"10,722", rank:"新会第5", note:"美智月榜 11套/1,183.01㎡"},
+          {y:"2026-03", sold:0,  est:false, price:"—",     rank:"未进新会TOP10", note:"美智月榜未上榜（第10名11套）"},
+          {y:"2026-04", sold:11, est:false, price:"10,995", rank:"新会第9", note:"美智月榜 11套/1,145.57㎡"},
+          {y:"2026-05", sold:0,  est:false, price:"—",     rank:"未进新会TOP10", note:"美智月榜未上榜（第10名16套）"},
+          {y:"2026-06", sold:5,  est:false, price:"10,428–10,815", rank:"周报第23-24周", note:"周报合计 5套（23周3+24周2；25周未进TOP10）"},
+          {y:"2026-07", sold:15, est:false, price:"10,711", rank:"新会第5", note:"美智月榜 15套/1,635.29㎡"},
+          {y:"2026-08", sold:0,  est:false, price:"—",     rank:"未进新会TOP10", note:"整月美智月榜未上榜（第10名11套@8515），8/28方入监控，差分已停止；9月重新累计"}
+        ]
+      }
+    },
+    {
+      name: "珑城半山", order: 8, xmid: "1704F62AD656456E9D05DF8CE8712007", inBoard: false, dev: "众力房地产（会城大道28号，圭峰山麓）", st: "s", stTxt: "在售（外围）",
+      fields: [
+        {k:"开售日期", v:"在售中（大盘多年）"},
+        {k:"栋数 / 户数", v:"住宅 4,257 套（总 8,528 套，74 万㎡超大盘）"},
+        {k:"户型面积", v:"94–119㎡ 高层 + 大量低层住宅"},
+        {k:"价格", v:"累计网签 9,821 元/㎡", hl:true, sub:"第37周 10,526 · 第36周未进榜 · 周价波动大"}
+      ],
+      tags: [{t:"低价跑量", c:"t2"},{t:"送车位", c:"t2"},{t:"超大盘", c:"t3"}],
+      sel: {sold: 3715, total: 4257, pct: 87},
+      selNote: "官方累计网签 3,712/4,257（87%）；第37周4套@10,526居新会第3；9月差分+6（API 9/11核，9/14 502）",
+      m: {sold: 9, p: 10526, pw: "第37周", note: "9月累计6套（官方API差分9/1–9/11，9/14 API 502不可用无法延展）；第37周4套@10526居新会第3；8月已归档=9套@10558（美智月榜）"}
+    },
+    {
+      name: "保利西海岸", order: 9, xmid: "63562FD72788441A9E2C3EFA2CB7D1A2", inBoard: false, dev: "保利（备案名骏凯豪庭，今古洲开发区）", st: "s", stTxt: "在售（外围）",
+      fields: [
+        {k:"开售日期", v:"2018 起分期开发（至今 8 年）"},
+        {k:"栋数 / 户数", v:"33 栋 / 住宅合计 8,077 套（官方拆两个项目）"},
+        {k:"户型面积", v:"80–143㎡ + 别墅"},
+        {k:"价格", v:"在售期均价 6,506 元/㎡", hl:true, sub:"第37周 7,051 · 御海累计 9,079 · 新推 4.0 楼座 8,500–10,000"}
+      ],
+      tags: [{t:"央企品牌", c:"t3"},{t:"4.0 产品", c:"t1"},{t:"尾盘让利", c:"t2"}],
+      sel: {sold: 7208, total: 8077, pct: 89},
+      selNote: "官方累计网签 7,208/8,077（89%）：御海 6,351/6,902（92%），今古洲 857/1,175（73%）、均价 6,506——尾盘大幅让利跑量",
+      m: {sold: 5, p: 7051, pw: "第37周", note: "9月累计5套（官方API差分9/1–9/11，9/14 API 502不可用）；第37周2套@7051居新会第8；8月已归档=13套@8280（美智月榜）"}
+    },
+    {
+      name: "朗廷云墅花园", order: 4, xmid: "753f571c-db5e-4e7a-aad4-12b2797212fc", inBoard: true, dev: "江门茂乾（禹洲朗廷云墅，枢纽新城文韬路8号）", st: "s", stTxt: "在售 · 板块内补登",
+      fields: [
+        {k:"开售日期", v:"在售中（已取证 8#、10#，第37周新领9座预售证72套）"},
+        {k:"栋数 / 户数", v:"住宅 576 套（总 1,232 套含商业，新取证9座+72套待API更新）"},
+        {k:"户型面积", v:"—（待核实）"},
+        {k:"价格", v:"网签均价 8,833 元/㎡", hl:true, sub:"第37周2套@8,346居新会第7 · 第36周未进榜"}
+      ],
+      tags: [{t:"禹洲品牌", c:"t3"},{t:"文韬路·板块内", c:"t1"},{t:"中低价走量", c:"t2"}],
+      sel: {sold: 407, total: 576, pct: 71},
+      selNote: "枢纽新城内大盘，官方累计网签 407/576（71%）；第37周新领9座预售证72套（新会预许字第2026033号）；第37周2套@8,346；9月差分+4（API 9/11核，9/14 502），对我方刚需产品有直接分流压力",
+      m: {sold: 4, p: 8346, pw: "第37周", note: "9月累计4套（官方API差分9/1–9/11，9/14 API 502不可用无法延展）；第37周2套@8346居新会第7；8月已归档=11套@8515（美智月榜）"}
+    },
+    {
+      name: "外围改善组", order: 10, xmid: "", inBoard: false, dev: "玖悦澜湾 / 敏捷云锦 / 大华御潭江 / 美的紫薇公馆", st: "s", stTxt: "在售（外围）",
+      fields: [
+        {k:"开售日期", v:"在售中"},
+        {k:"栋数 / 户数", v:"—"},
+        {k:"户型面积", v:"—"},
+        {k:"价格", v:"10,000–11,750 元/㎡", hl:true}
+      ],
+      tags: [{t:"品牌房企", c:"t3"},{t:"改善", c:"t4"}],
+      sel: null,
+      selNote: "外围改善盘价格上沿参考",
+      m: null
+    }
+  ],
+
+  /* 四类渠道 */
+  channels: [
+    {cat:"o", name:"江门市房屋交易和产权管理信息平台", desc:"网签套数/面积/金额、预售证、备案价、楼盘可售状态——判断竞品真实去化必看",
+     url:"http://jmzjj.jiangmen.cn:8085/", ic:"🏛️"},
+    {cat:"o", name:"江门市住建局官网（工作动态）", desc:"每月全市及分区成交面积、均价、库存解读报告",
+     url:"https://www.jiangmen.gov.cn/bmpd/jmszfhcxjsj/", ic:"📋"},
+    {cat:"o", name:"土地市场动态监测监管系统", desc:"新会区每宗地出让公告、成交价、规划条件——对标周边地价",
+     url:"https://landchina.mnr.gov.cn", ic:"🗺️"},
+    {cat:"o", name:"江门房协网", desc:"每日成交数据、新开楼盘、历史交易统计",
+     url:"http://www.jmrea.com", ic:"🏘️"},
+    {cat:"p", name:"安居客 · 新会", desc:"新会区房价走势月报、板块价格、涨跌小区排行",
+     url:"https://jiangmen.anjuke.com/", ic:"📈"},
+    {cat:"p", name:"房天下 · 江门", desc:"新会房价走势、楼盘挂牌与优惠信息",
+     url:"https://jm.fang.com/", ic:"📊"},
+    {cat:"p", name:"贝壳找房 · 江门", desc:"具体竞品楼盘在售房源、挂牌价、历史成交记录",
+     url:"https://jm.ke.com/", ic:"🔍"},
+    {cat:"n", name:"江门日报（数字报）", desc:"楼市版政策与市场分析",
+     url:"http://dzb.jmrb.com", ic:"📰"},
+    {cat:"n", name:"江门新闻网 · 房产频道", desc:"月度楼市成交分析",
+     url:"http://www.jmnews.com.cn", ic:"🌐"},
+    {cat:"n", name:"江门广播电视台", desc:"每月成交数据播报",
+     url:"https://www.jmtv.cn", ic:"📺"}
+  ],
+
+  /* 市场快照 */
+  mkAsOf: "2026-09-14 核实",
+  market: [
+    {l:"新会二手均价", r:"6,000–6,500 元/㎡", cls:""},
+    {l:"1-8月新会新房均价", r:"9,321 元/㎡ · 成交约2,500套 · 市外客群34%（新会住建局9/11）", cls:""},
+    {l:"第37周新会网签", r:"79套 · 8,870元/㎡（江门房协·9.7-9.13）", cls:"up"},
+    {l:"8月全市新房均价", r:"7,499 元/㎡ · 全市1,525套/16.97万㎡（美智月报）", cls:"up"},
+    {l:"全市库存", r:"约4.3万套 · 同比-15.8%（楼市BigBoss 8/28数据解读）", cls:"up"},
+    {l:"1-8月全市累计", r:"住宅网签量同比下行约-20%（楼市BigBoss数据）", cls:""},
+    {l:"板块热点", r:"点击卡片查看官方网签详情", hot:[
+      {t:"天汇 · 第37周6套@12,690 累计677/958", url:"http://jmzjj.jiangmen.cn:8085/public/web/Kfxm?xmid=1d5087ae-34c6-4928-9f8c-60497139379d&jgid=d111693f-6943-4f13-858a-cd61ff9184fd"},
+      {t:"峰荟 · 第37周4套@11,310 累计220/578", url:"http://jmzjj.jiangmen.cn:8085/public/web/Kfxm?xmid=2e94c442-0526-401a-bb7b-9d316ee3fc9b&jgid=d111693f-6943-4f13-858a-cd61ff9184fd"},
+      {t:"珑城 · 第37周4套@10,526 累计3,712/4,257", url:"http://jmzjj.jiangmen.cn:8085/public/web/Kfxm?xmid=1704F62AD656456E9D05DF8CE8712007&jgid=d111693f-6943-4f13-858a-cd61ff9184fd"}
+    ]}
+  ],
+
+  /* 房地产政策（官方来源，每日核实更新） */
+  polAsOf: "2026-09-14 核实",
+  policies: [
+    {
+      name: "人才房票（2026优化版）",
+      badge: "active", badgeTxt: "有效 · 至10/31",
+      src: "江门市住建局·江建〔2026〕81号",
+      date: "2026-06-18",
+      desc: "政府+企业双补贴，签合同时直接抵扣房款，最高6万元",
+      detail: "适用：全日制大专及以上学历 或 中级及以上职称（优化后取消本地就业和首套限制）\n"
+            + "政府补贴：1万元/人\n"
+            + "企业补贴：≥144㎡补5万 | 100–144㎡补4万 | <100㎡补3万\n"
+            + "叠加其他人才补贴最高26万（如博士后20万+房票6万）\n"
+            + "公积金贷款额外+10万(单)/+20万(双)\n"
+            + "房票有效期2个月，共发2600张，前2000名先到先得\n"
+            + "（截至9/11已发放163名，新会住建局发布）\n"
+            + "申领：微信搜「云链签」小程序",
+      url: "https://www.jiangmen.gov.cn/bmpd/jmszfhcxjsj/zwgk/jfwj/content/post_3508652.html"
+    },
+    {
+      name: "公积金缴存基数下限上调",
+      badge: "new", badgeTxt: "2026-08-31发布",
+      src: "江门市住房公积金管理中心 · 江房金字[2026]25号",
+      date: "2026-08-31",
+      desc: "9月起江门公积金缴存基数下限由1850元上调至2040元，个人/单位月缴存额下限各102元，合计204元",
+      detail: "依据：《广东省人民政府关于调整我省最低工资标准的通知》（粤府函〔2026〕188号）、《江门市人民政府关于调整我市企业职工最低工资标准的通知》（江府函〔2026〕124号）\n"
+            + "执行时间：2026年9月起\n"
+            + "缴存基数下限：2040元（原1850元）\n"
+            + "月缴存额下限：个人102元 + 单位102元 = 204元\n"
+            + "新参加工作或新调入职工自2026年9月起按新标准执行\n"
+            + "缴存基数低于新标准的职工，须在2027年7月31日前调整到位",
+      url: "http://www.jiangmen.gov.cn/bmpd/jmszfhcxjsj/zfgl/gjjzc/gjzc/content/post_3544755.html"
+    },
+    {
+      name: "公积金贷款额度提高",
+      badge: "active", badgeTxt: "延长至2026/12/31",
+      src: "江门市住房公积金管理中心",
+      date: "2025-12-25",
+      desc: "首套/二套公积金贷款额度阶段性上调，延长一年至2026年底",
+      detail: "首套：单职工最高40万 / 双职工最高80万\n"
+            + "二套：单职工最高35万 / 双职工最高70万\n"
+            + "多子女家庭首套最高140万（二孩双职工+全装修）\n"
+            + "全装修新建商品房额外+8万(单)/+16万(双)\n"
+            + "人才房票持有者额外+10万(单)/+20万(双)\n"
+            + "公积金贷款利率：首套5年以上2.6% | 二套3.075%",
+      url: "http://dzb.jmrb.com:8090/jmrb/html/2025-12/25/content_752825.htm"
+    },
+    {
+      name: "公积金购买一手车位（库）",
+      badge: "active", badgeTxt: "执行中 · 至12/31",
+      src: "江门市住房公积金管理中心",
+      date: "2026-08-08",
+      desc: "与自有住房同小区的一手车位可提取公积金，叠加「有车有位」补贴形成全链条支持",
+      detail: "时间：2026-08-08 至 2026-12-31\n"
+            + "对象：本人或配偶购买与名下住宅同一小区一手车位（库）\n"
+            + "额度：全款购≤车位总价；贷款购≤车位首付款\n"
+            + "限制：仅限一手车位（不含人防/二手车位），合同签订1年内可提取1次\n"
+            + "若公积金个贷率≥90%则自动暂停\n"
+            + "渠道：「江门公积金」公众号 / 广东政务服务网 / 受托银行网点\n"
+            + "咨询热线：0750-12329",
+      url: "https://www.jiangmen.gov.cn/newzwgk/hygq/content/post_3534303.html"
+    },
+    {
+      name: "契税优惠（国家政策）",
+      badge: "active", badgeTxt: "执行中",
+      src: "财政部·税务总局·住建部",
+      date: "2024-12-01起",
+      desc: "个人购房契税减按1%–2%征收，面积和套数分档",
+      detail: "唯一住房：≤140㎡ 按1% | >140㎡ 按1.5%\n"
+            + "二套住房：≤140㎡ 按1% | >140㎡ 按2%\n"
+            + "（2024-12-01起执行，全国统一）",
+      url: "https://shanxi.chinatax.gov.cn/zdgk/detail/sf-11407-545-1801273"
+    },
+    {
+      name: "住房以旧换新",
+      badge: "active", badgeTxt: "个税退税至2027",
+      src: "开平市住建局（转发政策）",
+      date: "2026年起持续",
+      desc: "委托销售模式换房，90天解约保护，个税可退",
+      detail: "模式：与房企签委托协议卖旧房+认购新房，设≥90天解约保护期\n"
+            + "旧房未售可无条件退定金\n"
+            + "个税退税：出售自有住房后1年内重新购房，退已缴个税\n"
+            + "（退税优惠至2027-12-31）\n"
+            + "房企提供新房专属优惠，中介优先推介旧房并减免服务费",
+      url: "https://www.kaiping.gov.cn/kpszfhcxjsj/gggs/content/post_3485060.html"
+    },
+    {
+      name: "「有车有位」车位补贴",
+      badge: "expire", badgeTxt: "至2026/10/31",
+      src: "江建房函〔2026〕13号",
+      date: "2026-05-20",
+      desc: "蓬江/江海/新会购买一手汽车位，每位补贴1000元，限3300名",
+      detail: "时间：2026-05-20 至 2026-10-31\n"
+            + "对象：蓬江/江海/新会三区购买一手汽车位并网签\n"
+            + "额度：每位1000元，总限额330万元（3300个车位）\n"
+            + "条件：车位网签价≥5万元，2026-11-20前完成备案\n"
+            + "先到先得，额满即止\n"
+            + "（截至7月底，符合条件网签车位已超800个，剩余约2,500个名额）\n"
+            + "可与「公积金购买一手车位」新政叠加享受",
+      url: "https://www.jiangmen.gov.cn/jmzjj/gkmlpt/content/3/3494/post_3494054.html"
+    },
+    {
+      name: "购房入户入学",
+      badge: "active", badgeTxt: "执行中",
+      src: "新会区人民政府",
+      date: "持续执行",
+      desc: "凭网签备案合同可入户，房户一致优先入学",
+      detail: "入户：凭网签备案房屋买卖合同可申请入户\n"
+            + "入学顺序：房户一致（优先）→ 房户分离（就近）→ 无房无户（统筹）\n"
+            + "新会区：华侨实验小学为地块紧邻学区\n"
+            + "一手房住户：户籍迁入房产+实际居住=按地段就近入学\n"
+            + "二手房：需前5年内无适龄儿童占用该地段学位（亲生兄弟姐妹除外）",
+      url: "https://www.xinhui.gov.cn/gzjg/qzfgzbm/jmsxhqzfhcxjsj/gzdt/content/post_3484619.html"
+    },
+    {
+      name: "新会「葵乡人才十条」",
+      badge: "active", badgeTxt: "执行中",
+      src: "新会区人民政府",
+      date: "2026年持续",
+      desc: "新会区特色人才政策，补贴可叠加人才房票",
+      detail: "博士生活补贴：20万元\n"
+            + "出站博士后安家费：30万元\n"
+            + "「双一流」或全球前300高校：硕士每月3000元 / 本科每月1500元（最长2年）\n"
+            + "企业引才「引才伯乐」补贴：最高80万元\n"
+            + "以上补贴可与人才房票叠加享受",
+      url: "https://www.xinhui.gov.cn/zwgk/ztzl/wjjzl/wjjzc/content/post_2813830.html"
+    },
+    {
+      name: "白名单融资协调",
+      badge: "active", badgeTxt: "执行中",
+      src: "江门市住建局",
+      date: "2026年持续",
+      desc: "支持白名单项目融资，预售资金超监管额度可提取还贷",
+      detail: "健全房地产融资协调机制，支持白名单项目融资\n"
+            + "白名单项目预售资金超监管额度部分可提取用于偿还到期贷款本息\n"
+            + "推进一手现房「带押网签」「带押过户」\n"
+            + "土地出让合同可明确不同用途土地使用权价格\n"
+            + "房企欠税可先缴税后缴滞纳金",
+      url: "https://www.jiangmen.gov.cn/jmzjj/gkmlpt/content/3/3098/post_3098070.html"
+    },
+    {
+      name: "现房销售加速 + 预售主体封顶（国家新政）",
+      badge: "new", badgeTxt: "2026-08-28发布",
+      src: "住建部·自然资源部·金融监管总局 · 建房规〔2026〕3号",
+      date: "2026-08-28",
+      desc: "新出让地块优先现房销售；继续预售的项目须单体建筑主体结构封顶；购房款全额监管",
+      detail: "一、完善预售管理：实行预售的商品住房项目，单体建筑应完成主体结构封顶才能对外销售\n"
+            + "购房人支付的首付款、个人住房贷款等购房资金全部存入预售资金监管账户\n"
+            + "二、有力有序推行现房销售：本通知施行之日起新出让土地/已出让但未取得建设工程规划许可证的项目，优先选择现房销售\n"
+            + "已取得规划许可证的「老项目」可继续预售也鼓励现售（新老划断）\n"
+            + "三、现房销售实行备案管理+定金制（取得施工许可后可签定金合同，主办银行监管）\n"
+            + "「交房即交证」全面推行\n"
+            + "四、对江门影响：现房模式拉高房企准入门槛；JCR2026-59 地块位于设计阶段，可结合现房销售策略定位",
+      url: "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2026/art_45644612a7064289bdc0d5b1427a25d8.html"
+    },
+    {
+      name: "个人房贷最长延至40年（国家新政）",
+      badge: "new", badgeTxt: "2026-08-28发布",
+      src: "央行·金融监管总局 · 银发〔2026〕171号",
+      date: "2026-08-28",
+      desc: "个人住房贷款期限由最长30年延长至40年；现房销售备案即放贷，预售须竣工备案后才放贷",
+      detail: "文件：《关于改革完善房地产信贷管理 推动加快构建房地产发展新模式的意见》\n"
+            + "一、个人住房贷款期限由最长30年延长至最长40年，灵活协商\n"
+            + "购房100万元等额本息、年利率3%：30年月供约4,216元；40年月供约3,581元，月供减少约635元\n"
+            + "二、贷款发放时点：购买现房 → 销售备案后即可发放；购买预售房 → 严格在项目竣工备案后发放\n"
+            + "确保购房人「能拿房、再还贷」，防范「钱房两空」风险\n"
+            + "三、开发贷款主办银行制：单个项目对应一家主办银行，预售项目贷款期限最长5年、现房项目7年\n"
+            + "项目资金封闭管理，预售/定金账户均在主办银行开立\n"
+            + "四、收入偿债比例上限从55%提升到60%（叠加40年期，月供压力进一步下行）\n"
+            + "对江门影响：房贷月供压力下降直接降低刚需门槛，对接 Puiting 地块刚需+小户型定位形成托举",
+      url: "https://www.pbc.gov.cn/tiaofasi/144941/3581332/2026082817013334439/index.html"
+    }
+  ]
+};
+
+/* ================= 渲染 ================= */
+document.getElementById("plateName").textContent = "JCR2026-59（新会08）";
+document.getElementById("plateTag").textContent = D.land.addrNote.split("·")[0].trim() + " · " + D.land.stage;
+document.getElementById("updAt").textContent = D.updatedAt;
+document.getElementById("statusBar").innerHTML = D.statusBar.map(s=>`<span>${s}</span>`).join("");
+
+/* 网签排名：月份翻页（rankIdx=0 当前月，>0 向前翻历史月），未进榜不显示，点击跳官方网签详情页
+   均价：当前月取 c.m.p（最近一周官方周报均价，周次标注 c.m.pw）；历史月取 sold 对象 {n,p}，p 缺失=官方未披露（不估算） */
+const RANK_BASE = "http://jmzjj.jiangmen.cn:8085/public/web/Kfxm?xmid=";
+let rankIdx = 0;
+
+function getRankData(i){
+  if(i===0){ /* 当前月：m.sold = 官方周报 + 每日累计差分，0 不显示（差分起点≠确认0）；p=最近一周官方周报均价，pw=周次 */
+    const rows = [...D.competitors]
+      .filter(c=>c.m && typeof c.m.sold === "number" && c.m.sold > 0)
+      .map(c=>({c, sold:c.m.sold, p:c.m.p, pw:c.m.pw}))
+      .sort((a,b)=>(b.sold-a.sold) || ((b.c.sel?b.c.sel.sold:0)-(a.c.sel?a.c.sel.sold:0)));
+    return {ym:D.mSnap.date.slice(0,7), src:"官方周报 + 累计差分 · 均价=最近一周周报", rows};
+  }
+  const months = D.rankHist.months;
+  const m = months[months.length - i];
+  if(!m) return null;
+  const rows = (m.sold?Object.entries(m.sold):[])
+    .map(([name,v])=>{
+      const c=D.competitors.find(x=>x.name===name);
+      if(!c) return null;
+      /* 兼容：sold 值可为 {n,p} 或纯数字（自动化过渡期） */
+      const o = (v && typeof v==="object") ? v : {n:v, p:undefined};
+      return {c, sold:o.n, p:o.p};
+    })
+    .filter(Boolean)
+    .sort((a,b)=>(b.sold-a.sold) || ((b.c.sel?b.c.sel.sold:0)-(a.c.sel?a.c.sel.sold:0)));
+  return {ym:m.y, src:m.src||"官方榜单", empty:!!m.empty, rows};
+}
+
+function renderRank(){
+  const d = getRankData(rankIdx);
+  const ymEl = document.getElementById("rankYm");
+  const srcEl = document.getElementById("rankSrc");
+  const asOfEl = document.getElementById("rankAsOf");
+  const listEl = document.getElementById("rankList");
+  const prevEl = document.getElementById("rankPrev");
+  const nextEl = document.getElementById("rankNext");
+  ymEl.textContent = d ? d.ym : "—";
+  srcEl.textContent = d ? d.src : "官方榜单未检索到";
+  if(!d || d.empty){
+    asOfEl.textContent = (d?d.ym:"") + " · 无数据";
+    listEl.innerHTML = `<div class="rank-note">${d&&d.ym?d.ym:"该月"} 官方月榜/周报未检索到竞品上榜数据 · 未进榜不估算、不显示，保证数据真实准确</div>`;
+  } else {
+    const total = d.rows.reduce((s,r)=>s+r.sold,0);
+    asOfEl.textContent = d.ym + " · 在榜 " + d.rows.length + " 盘 / 共 " + total + " 套";
+    listEl.innerHTML = d.rows.map((r,i)=>{
+      const c = r.c;
+      const medals = ["🥇","🥈","🥉"];
+      const no = i<3 ? `<span class="rk-no top">${medals[i]}</span>` : `<span class="rk-no">${i+1}</span>`;
+      const tag = c.inBoard ? `<span class="rk-tag in">板块内</span>` : `<span class="rk-tag out">外围</span>`;
+      const href = c.xmid ? RANK_BASE+c.xmid+"&jgid=d111693f-6943-4f13-858a-cd61ff9184fd" : "javascript:void(0)";
+      const ext = c.xmid ? ' target="_blank" rel="noopener"' : "";
+      const cum = c.sel ? `去化 ${c.sel.pct}% · 累计 ${c.sel.sold.toLocaleString()} 套` : "暂无累计数据";
+      const unit = rankIdx===0 ? "本月" : "当月";
+      const price = (typeof r.p === "number" && r.p > 0)
+        ? `<span class="rk-price">${r.p.toLocaleString()} 元/㎡${r.pw?`<i>· ${r.pw}</i>`:""}</span>`
+        : `<span class="rk-price na">官方未披露均价</span>`;
+      return `<a class="rank" href="${href}"${ext}>
+        ${no}
+        <span class="rk-body">
+          <span class="rk-name">${c.name} ${tag}</span>
+          <span class="rk-bar"><i style="width:${c.sel?c.sel.pct:0}%"></i></span>
+          <span class="rk-sub">${cum}</span>
+        </span>
+        <span class="rk-num"><span>${r.sold}<small>${unit}</small></span>${price}</span>
+        <span class="go">›</span>
+      </a>`;
+    }).join("") + `<div class="rank-note">在榜数据来源：${d.src}（官方口径）· 均价为该月官方榜同期网签均价 · 未进榜不显示（不估算 0）· 点击楼盘查看官方网签详情</div>`;
+  }
+  prevEl.disabled = rankIdx >= D.rankHist.months.length;
+  nextEl.disabled = rankIdx <= 0;
+}
+document.getElementById("rankPrev").addEventListener("click", ()=>{ rankIdx++; renderRank(); });
+document.getElementById("rankNext").addEventListener("click", ()=>{ rankIdx--; renderRank(); });
+renderRank();
+
+/* 地块 */
+document.getElementById("landMore").textContent = "宗地 440705012003GB00344";
+document.getElementById("landAddr").textContent = D.land.addr;
+document.getElementById("landAddrNote").textContent = D.land.addrNote;
+document.getElementById("landDealDate").textContent = D.land.dealDate;
+document.getElementById("landMode").textContent = D.land.mode;
+document.getElementById("landPrice").textContent = D.land.price;
+document.getElementById("landFloor").textContent = D.land.floor;
+document.getElementById("landArea").textContent = D.land.area;
+document.getElementById("landPlan").innerHTML = D.land.plan.map(p=>`<span class="chip ${p.c||""}">${p.t}</span>`).join("");
+document.getElementById("landPeijian").innerHTML = D.land.peijian.map(p=>`<span class="chip">${p}</span>`).join("");
+document.getElementById("landStage").textContent = D.land.stage;
+document.getElementById("landEdge").textContent = D.land.edge;
+document.getElementById("landRef").textContent = D.land.ref;
+
+/* 竞品（新盘→旧盘排序：order 升序，纯新盘/新取证在前） */
+document.getElementById("compCount").textContent = D.competitors.length + " 盘 · 新→旧";
+document.getElementById("compList").innerHTML = [...D.competitors]
+  .sort((a,b)=>(a.order??99)-(b.order??99))
+  .map(c=>{
+  const stCls = c.st==="s"?"sale":(c.st==="n"?"new":"wait");
+  const rows = c.fields.map(f=>{
+    const hl = f.hl?' style="color:#2e6ea6"':'';
+    return `<div class="crow"><div class="k">${f.k}</div><div class="v"${hl}>${f.v}${f.sub?` <span class="sub">· ${f.sub}</span>`:""}</div></div>`;
+  }).join("");
+  const tags = c.tags.map(t=>`<span class="ptag ${t.c}">${t.t}</span>`).join("");
+  let sel = "";
+  if(c.sel){
+    const p = c.sel.pct;
+    sel = `<div class="selrow"><div class="selbar"><i style="width:${p}%"></i></div>
+           <div class="selnum">${p}%</div></div>
+           <div class="selnote">已售 ${c.sel.sold} / ${c.sel.total} 套（官方网签）</div>`;
+  } else {
+    sel = `<div class="selnote">${c.selNote||"—"}</div>`;
+  }
+  const trendBtn = c.trend12 ? `<button class="trend-btn" data-trend-name="${c.name}">📈 点击查看 12 个月月度趋势</button>` : "";
+  return `<div class="comp">
+    <div class="comp-head">
+      <div><div class="comp-name">${c.name}</div><div class="comp-dev">${c.dev}</div></div>
+      <span class="st ${stCls}">${c.stTxt}</span>
+    </div>
+    <div class="comp-body">
+      ${rows}
+      <div class="tagrow">${tags}</div>
+      ${sel}
+      ${trendBtn}
+    </div>
+  </div>`;
+}).join("");
+
+/* 渠道 */
+document.getElementById("chanList").innerHTML = D.channels.map(c=>{
+  const cls = c.cat==="o"?"o":(c.cat==="p"?"p":"n");
+  return `<a class="chan" href="${c.url}" target="_blank" rel="noopener">
+    <div class="ic ${cls}">${c.ic}</div>
+    <div class="body">
+      <div class="name">${c.name}<span class="go">›</span></div>
+      <div class="desc">${c.desc}</div>
+      <div class="url">${c.url.replace(/^https?:\/\//,"")}</div>
+    </div>
+  </a>`;
+}).join("");
+
+/* 市场快照 */
+document.getElementById("mkAsOf").textContent = D.mkAsOf;
+document.getElementById("mkList").innerHTML = D.market.map(m=>{
+  if(m.hot){
+    const links = m.hot.map((h,i)=>`<a class="hot" href="${h.url}" target="_blank" rel="noopener">
+      <span class="tag">热${i+1}</span><span class="t">${h.t}</span><span class="s">›</span></a>`).join("");
+    return `<div class="mk-row"><span class="l">${m.l}</span><span class="r ${m.cls||""}">${m.r}</span></div>
+            <div style="margin-top:8px">${links}</div>`;
+  }
+  return `<div class="mk-row"><span class="l">${m.l}</span><span class="r ${m.cls||""}">${m.r}</span></div>`;
+}).join("");
+
+/* 房地产政策 */
+document.getElementById("polAsOf").textContent = D.polAsOf;
+/* 按最新发布排序：badge:"new" 最优先，其余按 date 中可解析的 YYYY-MM-DD 降序；无明确日期的沉底并保持原相对顺序 */
+document.getElementById("polList").innerHTML = D.policies.map((p,idx)=>{
+  const dm = /(\d{4})-(\d{2})-(\d{2})/.exec(p.date||"");
+  return {p, idx, sd: dm ? dm[1]+dm[2]+dm[3] : (p.badge==="new" ? "99999999" : "00000000")};
+}).sort((a,b)=> (a.sd!==b.sd) ? (a.sd<b.sd?1:-1) : a.idx-b.idx).map(({p})=>{
+  return `<div class="pol">
+    <div class="pol-head">
+      <div>
+        <div class="pol-name">${p.name}</div>
+        <div class="pol-src">${p.src} · ${p.date}</div>
+      </div>
+      <span class="pol-badge ${p.badge}">${p.badgeTxt}</span>
+    </div>
+    <div class="pol-body">
+      <div class="pol-desc">${p.desc}</div>
+      <div class="pol-detail">${p.detail}</div>
+      <a class="pol-link" href="${p.url}" target="_blank" rel="noopener">查看官方原文 ›</a>
+    </div>
+  </div>`;
+}).join("");
+
+/* 首页新政策醒目横幅：badge==="new" 的政策自动上榜，点击直达政策页；无新政策时隐藏 */
+(function(){
+  const np = D.policies.filter(p=>p.badge==="new");
+  const el = document.getElementById("newPolAlert");
+  if(!np.length){ el.style.display="none"; return; }
+  el.innerHTML = `<div class="npa">
+    <div class="npa-head"><span class="npa-dot"></span><span class="npa-title">📣 新政策提醒</span>
+      <span class="npa-count">${np.length} 条</span></div>
+    ${np.map(p=>`<div class="npa-item">
+      <span class="tag">NEW</span>
+      <span class="nm">${p.name}<small>${p.badgeTxt} · ${p.desc}</small></span>
+      <span class="go">›</span>
+    </div>`).join("")}
+  </div>`;
+  el.querySelectorAll(".npa-item").forEach(it=>{
+    it.addEventListener("click", ()=>{
+      const link = document.querySelector('.navbar a[data-target="sec-pol"]');
+      if(link) link.click();
+    });
+  });
+})();
+
+/* 书签导航：模块独立显示（tab 切换，点击只显示当前模块，默认首页） */
+(function(){
+  const links = Array.from(document.querySelectorAll(".navbar a"));
+  function show(id){
+    document.querySelectorAll(".sec").forEach(el=>{
+      el.style.display = el.id===id ? "" : "none";
+    });
+    links.forEach(a=>a.classList.toggle("on", a.dataset.target===id));
+  }
+  links.forEach(a=>a.addEventListener("click", e=>{
+    e.preventDefault();
+    show(a.dataset.target);
+    window.scrollTo({top:0, behavior:"smooth"});
+  }));
+  show("sec-home");
+})();
+
+/* ===== 12个月趋势弹窗 ===== */
+function openTrend(name){
+  const c = D.competitors.find(x=>x.name===name);
+  if(!c || !c.trend12) return;
+  const t = c.trend12;
+  const max = Math.max(...t.months.map(m=>m.sold), 1);
+  document.getElementById("trendTitle").textContent = c.name + " · 月度网签趋势";
+  document.getElementById("trendSub").textContent =
+    "2025-09 ~ 2026-08 · 官方累计 " + (c.sel?c.sel.sold+"/"+c.sel.total+" 套（"+c.sel.pct+"%）":"—")
+    + " · 数据截至 " + t.asOf;
+  document.getElementById("trendChart").innerHTML = t.months.map(m=>{
+    const has = m.sold > 0;
+    const h = has ? Math.round(m.sold/max*100) : 3; /* 未进榜月份矮柱占位 */
+    const cls = has ? "exact" : "est";
+    return `<div class="bar-col">
+      <div class="bar-val">${has?m.sold:"—"}</div>
+      <div class="bar ${cls}" style="height:${h}%"></div>
+      <div class="bar-label">${m.y.slice(2)}</div>
+    </div>`;
+  }).join("");
+  document.getElementById("trendTable").innerHTML =
+    `<tr><th>月份</th><th>套数</th><th>均价(元/㎡)</th><th>口径 / 排名</th></tr>` +
+    t.months.map(m=>{
+      const has = m.sold > 0;
+      const soldTxt = has ? m.sold : "—";
+      return `<tr class="${has?"exact":""}">
+        <td class="m">${m.y}</td>
+        <td><b>${soldTxt}</b></td>
+        <td>${m.price}</td>
+        <td>${m.note}</td>
+      </tr>`;
+    }).join("");
+  document.getElementById("trendNote").innerHTML =
+    `<b>数据来源：</b>官方月榜（江门美智研究院「住宅网签套数TOP10」，源数据=江门住建局）与江门房协网周榜（浪浪看江门转载），统计口径=住宅网签。<br>
+     <b>深色柱</b>=该月官方榜单直接披露的确认值；<b>斜纹柱</b>=该月官方月榜/周报未披露该盘（未进TOP10 或榜单未检索到），一律不估算。<br>
+     <b>锚点：</b>2025.1-11 博荟累计 152 套 @ 11,096 元/㎡（江门楼市智库）；2026-08 整月未进新会美智月榜TOP10，差分已停止；2026-09 起按官方累计网签每日差分监控当月。<br>
+     <b>官方口径：</b>新会发布 2026-08 报道「博荟+峰荟 120㎡及以下共约498套、已网签356套，去化71.5%」。`;
+  document.getElementById("trendModal").style.display = "flex";
+}
+function closeTrend(){
+  document.getElementById("trendModal").style.display = "none";
+}
+
+/* 为趋势按钮绑定点击事件（不依赖内联 onclick，兼容移动端/自动化工具） */
+document.querySelectorAll(".trend-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>openTrend(btn.dataset.trendName));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# 临时/调试文件
+_*.py
+_before.html
+*.bak_*
+tmp_*
+dbg_*
+__pycache__/
+*.pyc
+.DS_Store
+dist/
