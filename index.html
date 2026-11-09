@@ -366,6 +366,34 @@
       </div>
     </div>
 
+    <div class="card">
+      <div class="land-addr">
+        <div class="ic">🔨</div>
+        <div>
+          <div class="t" id="land2Addr"></div>
+          <div class="s" id="land2AddrNote"></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="kv"><div class="k">网上竞价时间</div><div class="v" id="land2Date"></div></div>
+        <div class="kv"><div class="k">出让方式</div><div class="v small" id="land2Mode"></div></div>
+        <div class="kv full"><div class="k">挂牌起始价</div>
+          <div class="v" id="land2Price"></div></div>
+        <div class="kv"><div class="k">楼面价（按计容上限）</div><div class="v hl" id="land2Floor"></div></div>
+        <div class="kv"><div class="k">用地面积</div><div class="v" id="land2Area"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title" style="margin:0 0 8px"><span class="bar"></span><h2 style="font-size:14px">新36号地 · 规划条件与竞买要求</h2></div>
+      <div class="chiprow" id="land2Plan"></div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #eef2f6">
+        <div style="font-size:12px;color:var(--sub);margin-bottom:6px">配建与竞买要求</div>
+        <div class="chiprow" id="land2Peijian"></div>
+      </div>
+    </div>
+
     <div class="deal">
       <div><div class="lbl">项目阶段</div><div class="big" id="landStage"></div></div>
       <div><div class="lbl">楼面价安全垫</div><div class="big" id="landEdge"></div></div>
@@ -484,6 +512,26 @@ const D = {
     stage: "设计阶段",
     edge: "楼面价 3,594 → 对标 10,000+ 有健康利润",
     ref: "9,000–11,000 元/㎡（4.0 产品）"
+  },
+
+  /* 拟竞拍：JCR2026-248（新会36）号地——公告：新会区政府网 post_3569732（2026-10-15 挂牌） */
+  land2: {
+    addr: "拟竞拍 · JCR2026-248（新会36）号地",
+    addrNote: "枢纽新城厚德路与梅江南路交叉口西南角 · 紧邻本宗地（JCR2026-59），同板块小体量补仓机会",
+    dealDate: "2026-11-17 09:30",
+    mode: "网上挂牌",
+    price: "2,322.0612 万元（保证金 465 万 · 增价幅度 30 万/次）",
+    floor: "约 3,100 元/㎡（起拍价 ÷ 计容上限 7,491 ㎡）",
+    area: "5.6 亩（3,745.26 ㎡）",
+    plan: [
+      {t:"容积率 1.2–2.0"},
+      {t:"计容 4,494–7,491 ㎡"},
+      {t:"商业 ≤ 20%"},
+      {t:"密度 ≤ 25%", c:"w"},
+      {t:"绿地率 ≥ 25%", c:"g"},
+      {t:"限高 ≤ 80m", c:"w"}
+    ],
+    peijian: ["环卫设施（垃圾收集点·再生资源回收点）", "健身场地设施", "与首期住宅四同步 · 无偿移交", "竞买人须具房地产开发资质", "住宅 70 年 / 商业 40 年"]
   },
 
   /* 竞品：s=在售 n=新盘/未开售 w=待售
@@ -986,6 +1034,16 @@ document.getElementById("landPeijian").innerHTML = D.land.peijian.map(p=>`<span 
 document.getElementById("landStage").textContent = D.land.stage;
 document.getElementById("landEdge").textContent = D.land.edge;
 document.getElementById("landRef").textContent = D.land.ref;
+/* 拟竞拍：新会36号地 */
+document.getElementById("land2Addr").textContent = D.land2.addr;
+document.getElementById("land2AddrNote").textContent = D.land2.addrNote;
+document.getElementById("land2Date").textContent = D.land2.dealDate;
+document.getElementById("land2Mode").textContent = D.land2.mode;
+document.getElementById("land2Price").textContent = D.land2.price;
+document.getElementById("land2Floor").textContent = D.land2.floor;
+document.getElementById("land2Area").textContent = D.land2.area;
+document.getElementById("land2Plan").innerHTML = D.land2.plan.map(p=>`<span class="chip ${p.c||""}">${p.t}</span>`).join("");
+document.getElementById("land2Peijian").innerHTML = D.land2.peijian.map(p=>`<span class="chip">${p}</span>`).join("");
 
 /* 竞品（新盘→旧盘排序：order 升序，纯新盘/新取证在前） */
 document.getElementById("compCount").textContent = D.competitors.length + " 盘 · 新→旧";
