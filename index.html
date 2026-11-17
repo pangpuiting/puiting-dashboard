@@ -368,7 +368,7 @@
 
     <div class="card">
       <div class="land-addr">
-        <div class="ic">🔨</div>
+        <div class="ic">✅</div>
         <div>
           <div class="t" id="land2Addr"></div>
           <div class="s" id="land2AddrNote"></div>
@@ -376,9 +376,9 @@
       </div>
 
       <div class="grid2">
-        <div class="kv"><div class="k">网上竞价时间</div><div class="v" id="land2Date"></div></div>
+        <div class="kv"><div class="k">成交日期</div><div class="v" id="land2Date"></div></div>
         <div class="kv"><div class="k">出让方式</div><div class="v small" id="land2Mode"></div></div>
-        <div class="kv full"><div class="k">挂牌起始价</div>
+        <div class="kv full"><div class="k">成交总价</div>
           <div class="v" id="land2Price"></div></div>
         <div class="kv"><div class="k">楼面价（按计容上限）</div><div class="v hl" id="land2Floor"></div></div>
         <div class="kv"><div class="k">用地面积</div><div class="v" id="land2Area"></div></div>
@@ -386,11 +386,15 @@
     </div>
 
     <div class="card">
-      <div class="sec-title" style="margin:0 0 8px"><span class="bar"></span><h2 style="font-size:14px">新36号地 · 规划条件与竞买要求</h2></div>
+      <div class="sec-title" style="margin:0 0 8px"><span class="bar"></span><h2 style="font-size:14px">新36号地 · 规划条件</h2></div>
       <div class="chiprow" id="land2Plan"></div>
       <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #eef2f6">
-        <div style="font-size:12px;color:var(--sub);margin-bottom:6px">配建与竞买要求</div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:6px">配建要求（无偿移交）</div>
         <div class="chiprow" id="land2Peijian"></div>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #eef2f6">
+        <div style="font-size:12px;color:var(--sub);margin-bottom:6px">成交后关键节点（公告约定）</div>
+        <div class="chiprow" id="land2Nodes"></div>
       </div>
     </div>
 
@@ -467,7 +471,8 @@ const D = {
      逻辑：本月新增 = 本次官方累计 - 上次快照累计，同月累加到各盘 m.sold，跨月重置并更新快照 */
   mSnap: {date:"2026-11-16", sold:{
     "怡福·峰荟":259, "银海湾壹号":73, "天悦骏汇花园":351, "银海盛汇天际":343,
-    "骏景湾天汇":743, "怡福·博荟":533, "珑城半山":3749, "保利西海岸":7235, "朗廷云墅花园":443, "悦峰府":394, "翡翠天暻":663, "外围改善组":0
+    "骏景湾天汇":743, "怡福·博荟":533, "珑城半山":3749, "保利西海岸":7235, "朗廷云墅花园":443,
+    "悦峰府":394, "翡翠天暻":658, "外围改善组":0
   }},
 
   /* 历史月网签（排名翻页用）。正序存放，最近历史月在最末。
@@ -513,14 +518,15 @@ const D = {
     ref: "9,000–11,000 元/㎡（4.0 产品）"
   },
 
-  /* 拟竞拍：JCR2026-248（新会36）号地——公告：新会区政府网 post_3569732（2026-10-15 挂牌） */
+  /* 已竞得：JCR2026-248（新会36）号地——2026-11-17 底价成交（竞得人：江门市联新地产有限公司，与本宗地同一主体）；
+     宗地 440705012003GB00348；公告：新会区政府网 post_3569732 */
   land2: {
-    addr: "拟竞拍 · JCR2026-248（新会36）号地",
-    addrNote: "枢纽新城厚德路与梅江南路交叉口西南角 · 紧邻本宗地（JCR2026-59），同板块小体量补仓机会",
-    dealDate: "2026-11-17 09:30",
-    mode: "网上挂牌",
-    price: "2,322.0612 万元（保证金 465 万 · 增价幅度 30 万/次）",
-    floor: "约 3,100 元/㎡（起拍价 ÷ 计容上限 7,491 ㎡）",
+    addr: "已竞得 · JCR2026-248（新会36）号地",
+    addrNote: "枢纽新城厚德路与梅江南路交叉口西南角 · 紧邻本宗地（JCR2026-59）· 竞得人：江门市联新地产有限公司",
+    dealDate: "2026-11-17",
+    mode: "底价成交",
+    price: "2,322.0612 万元",
+    floor: "约 3,100 元/㎡（÷ 计容上限 7,491 ㎡）",
     area: "5.6 亩（3,745.26 ㎡）",
     plan: [
       {t:"容积率 1.2–2.0"},
@@ -530,7 +536,8 @@ const D = {
       {t:"绿地率 ≥ 25%", c:"g"},
       {t:"限高 ≤ 80m", c:"w"}
     ],
-    peijian: ["环卫设施（垃圾收集点·再生资源回收点）", "健身场地设施", "与首期住宅四同步 · 无偿移交", "竞买人须具房地产开发资质", "住宅 70 年 / 商业 40 年"]
+    peijian: ["环卫设施（垃圾收集点·再生资源回收点）", "健身场地设施", "与首期住宅四同步 · 无偿移交", "住宅 70 年 / 商业 40 年"],
+    nodes: ["成交确认书：5 个工作日内", "出让合同：6 个工作日内", "价款：30 日内付 50% · 1 年内缴清（LPR 计息）", "12 个月内交地", "24 个月内开工 · 60 个月内竣工"]
   },
 
   /* 竞品：s=在售 n=新盘/未开售 w=待售
@@ -696,9 +703,9 @@ const D = {
         {k:"价格", v:"网签均价 8,446 元/㎡", hl:true, sub:"第45周 4套@8,923 · 10月38套@9,096（新会第3/全市第10）· 参考价约9,500 · 11月累计均价持续回落"}
       ],
       tags: [{t:"高赠送·4.5代", c:"t1"},{t:"精装", c:"t1"},{t:"低价刚需", c:"t2"},{t:"老城芯", c:"t3"}],
-      sel: {sold: 663, total: 1393, pct: 48},
+      sel: {sold: 658, total: 1393, pct: 47},
       selNote: "官方累计网签 658/1,393（47%）；10月38套@9,096居新会第3/全市第10、第45周4套@8,923；11/9-11/15两周差分+30持续放量（累计均价8,490→8,446回落）——11/9 起新纳入监控",
-      m: {sold: 39, p: 8923, pw: "第45周", note: "11/9 新纳入监控（无历史差分基准）；11/13-11/15官方累计差分+14继续放量（累计均价8,465→8,446回落），11月合计34套领跑监控盘；第45周4套@8,923、第46周未进榜均价回退第45周；10月38套@9,096（美智月榜新会第3/全市第10）"}
+      m: {sold: 34, p: 8923, pw: "第45周", note: "11/9 新纳入监控（无历史差分基准）；11/13-11/15官方累计差分+14继续放量（累计均价8,465→8,446回落），11月合计34套领跑监控盘；第45周4套@8,923、第46周未进榜均价回退第45周；10月38套@9,096（美智月榜新会第3/全市第10）"}
     },
     {
       name: "外围改善组", order: 12, xmid: "", inBoard: false, dev: "玖悦澜湾 / 敏捷云锦 / 大华御潭江 / 美的紫薇公馆", st: "s", stTxt: "在售（外围）",
@@ -1044,6 +1051,7 @@ document.getElementById("land2Floor").textContent = D.land2.floor;
 document.getElementById("land2Area").textContent = D.land2.area;
 document.getElementById("land2Plan").innerHTML = D.land2.plan.map(p=>`<span class="chip ${p.c||""}">${p.t}</span>`).join("");
 document.getElementById("land2Peijian").innerHTML = D.land2.peijian.map(p=>`<span class="chip">${p}</span>`).join("");
+document.getElementById("land2Nodes").innerHTML = D.land2.nodes.map(p=>`<span class="chip">${p}</span>`).join("");
 
 /* 竞品（新盘→旧盘排序：order 升序，纯新盘/新取证在前） */
 document.getElementById("compCount").textContent = D.competitors.length + " 盘 · 新→旧";
